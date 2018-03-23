@@ -12,6 +12,6 @@
     }
   ],
   "permissions": [
-    "tabs"
+    "tabs", "webRequest", "https://exhentai.org/", "https://e-hentai.org/"
   ]
 }
