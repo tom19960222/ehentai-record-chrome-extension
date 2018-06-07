@@ -1,0 +1,26 @@
+{
+  "name": "ehentai-record-chrome-extension",
+  "version": "1.0.0",
+  "description": "",
+  "main": "content.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "build": "tsc --pretty -p . && browserify src/content.js > content.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.hsexpert.net/tom19960222/ehentai-record-chrome-extension.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^22.2.3",
+    "browserify": "^16.2.0",
+    "eslint": "^4.19.1",
+    "jest": "^22.4.3",
+    "mock-xmlhttprequest": "^1.2.0"
+  },
+  "jest": {
+    "testURL": "http://localhost"
+  }
+}
