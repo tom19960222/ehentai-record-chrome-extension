@@ -15,6 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^22.2.3",
+    "axios-mock-adapter": "^1.15.0",
     "browserify": "^16.2.0",
     "eslint": "^4.19.1",
     "jest": "^22.4.3",
@@ -22,5 +23,8 @@
   },
   "jest": {
     "testURL": "http://localhost"
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
   }
 }
