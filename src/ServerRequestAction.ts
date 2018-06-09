@@ -72,7 +72,7 @@ export class ServerRequestAction {
     return metadata;
   }
 
-  queryMetadataFromEHentaiAPIServer = async (apiService: string, galleryId: string, galleryToken: string) : Promise<Metadata> => {
+  queryMetadataFromEHentaiAPIServer = async (apiService: string, galleryId: number, galleryToken: string) : Promise<Metadata> => {
     const data = {
       'method': 'gdata',
       'gidlist': [
@@ -83,12 +83,11 @@ export class ServerRequestAction {
     const apiUrl = apiService === 'exhentai' ? 'https://exhentai.org/api.php' : 'https://api.e-hentai.org/api.php';
     const headers = {'Content-Type': 'application/json'};
     const response = await axios.post(apiUrl, data, { headers });
-    console.log('response', response);
     return new Metadata(response.data.gmetadata[0]);
   }
 
   sendMetadataToServer = async (metadata: Metadata) : Promise<MetadataServerRequest> => {
-    const SERVER_URL = 'https://eh-record.hsexpert.net/record';
+    const SERVER_URL = 'https://eh-record.hsexpert.net/metadata';
     const data = new MetadataServerRequest({
       metadata: metadata,
       user: 'tom19960222@gmail.com',
