@@ -1,5 +1,5 @@
 // console.log(document.URL);
-import { ServerRequestAction } from "./ServerRequestAction";
+import { ServerRequestAction, ReadEvent, ViewerTypeEnum } from "./ServerRequestAction";
 import { mpvPageReadTracker } from "./mpvPageReadTracker";
 
 export enum Position {
@@ -83,6 +83,7 @@ export class Main {
   async start() {
     console.log("document.URL", this.document.URL);
     const urlInfo = this.extractURLInformation(this.document.URL);
+    console.log('Position:', urlInfo.position);
 
     if (!urlInfo){
       // Not in target website.
@@ -103,8 +104,20 @@ export class Main {
           urlInfo.galleryToken
         );
         await this.serverRequestAction.sendMetadataToServer(metadata);
+        await this.serverRequestAction.sendEventToServer(new ReadEvent({
+          viewer_type: ViewerTypeEnum.BookDetail,
+          gid: urlInfo.galleryId,
+          page_number: urlInfo.page
+        }));
         break;
-
+      
+      case Position.single:
+        await this.serverRequestAction.sendEventToServer(new ReadEvent({
+          viewer_type: ViewerTypeEnum.BookSingleImagePage,
+          gid: urlInfo.galleryId,
+          page_number: urlInfo.page
+        }));
+        break;
       case Position.mpv:
         new mpvPageReadTracker({ serverRequestAction: this.serverRequestAction, galleryInfo: urlInfo });
         break;
