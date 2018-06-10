@@ -1736,6 +1736,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ServerRequestAction_1 = require("./ServerRequestAction");
 const mpvPageReadTracker_1 = require("./mpvPageReadTracker");
 const singlePageReadTracker_1 = require("./singlePageReadTracker");
+const recommandGenerator_1 = require("./recommandGenerator");
 const util_1 = require("./util");
 const model_1 = require("./model");
 class Main {
@@ -1747,11 +1748,10 @@ class Main {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("document.URL", this.document.URL);
             const urlInfo = util_1.extractURLInformation(this.document.URL);
-            console.log('Position:', urlInfo.position);
             if (!urlInfo) {
-                console.log(urlInfo, 'urlInfo');
                 return;
             }
+            console.log('Position:', urlInfo.position);
             switch (urlInfo.position) {
                 case model_1.Position.gallery:
                     console.log(`Gallery_id=${urlInfo.galleryId}, Gallery_token=${urlInfo.galleryToken}`);
@@ -1774,6 +1774,9 @@ class Main {
                 case model_1.Position.mpv:
                     new mpvPageReadTracker_1.mpvPageReadTracker({ serverRequestAction: this.serverRequestAction, galleryInfo: urlInfo });
                     break;
+                case model_1.Position.search:
+                    new recommandGenerator_1.RecommandGenerator();
+                    break;
             }
         });
     }
@@ -1781,7 +1784,7 @@ class Main {
 exports.Main = Main;
 new Main(window.document).start().then(() => { });
 
-},{"./ServerRequestAction":28,"./model":30,"./mpvPageReadTracker":31,"./singlePageReadTracker":32,"./util":33}],30:[function(require,module,exports){
+},{"./ServerRequestAction":28,"./model":30,"./mpvPageReadTracker":31,"./recommandGenerator":32,"./singlePageReadTracker":33,"./util":34}],30:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Position;
@@ -1789,6 +1792,7 @@ var Position;
     Position["gallery"] = "gallery";
     Position["mpv"] = "mpv";
     Position["single"] = "single";
+    Position["search"] = "search";
 })(Position = exports.Position || (exports.Position = {}));
 class GalleryInfo {
     constructor({ position, galleryId, galleryToken, site, page }) {
@@ -1846,6 +1850,70 @@ exports.default = mpvPageReadTracker;
 
 },{"./ServerRequestAction":28}],32:[function(require,module,exports){
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const axios_1 = require("axios");
+class RecommandGenerator {
+    constructor() {
+        this.generateItg = () => {
+            const itgElement = document.createElement('div');
+            itgElement.className = 'itg';
+            itgElement.style.height = '330px';
+            return itgElement;
+        };
+        this.generateId1 = (href, img, text) => {
+            const id1Element = document.createElement('div');
+            id1Element.className = 'id1';
+            id1Element.style.height = '315px';
+            const id2Element = this.generateId2(href, text);
+            const id3Element = this.generateId3(href, img);
+            id1Element.appendChild(id2Element);
+            id1Element.appendChild(id3Element);
+            return id1Element;
+        };
+        this.generateAElement = (href, text) => {
+            const element = document.createElement('a');
+            element.href = href;
+            if (text)
+                element.text = text;
+            return element;
+        };
+        this.generateId2 = (href, text) => {
+            const id2Element = document.createElement('div');
+            id2Element.className = 'id2';
+            id2Element.appendChild(this.generateAElement(href, text));
+            return id2Element;
+        };
+        this.generateId3 = (href, img) => {
+            const id3Element = document.createElement('div');
+            id3Element.style.height = '280px';
+            id3Element.className = 'id3';
+            const aElement = this.generateAElement(href);
+            const imgElement = document.createElement('img');
+            imgElement.src = img;
+            imgElement.style.position = 'relative';
+            imgElement.style.top = '-1px';
+            aElement.appendChild(imgElement);
+            id3Element.appendChild(aElement);
+            return id3Element;
+        };
+        this.recommandURL = 'https://eh-record.hsexpert.net/recommand';
+        const originalItgElement = document.querySelector('.itg');
+        const originalItgElementParent = originalItgElement.parentElement;
+        const newItgElement = this.generateItg();
+        axios_1.default.get(this.recommandURL)
+            .then(response => {
+            const recommandDataList = response.data;
+            for (const recommandData of recommandDataList) {
+                newItgElement.appendChild(this.generateId1(recommandData.href, recommandData.img, recommandData.text));
+            }
+            originalItgElementParent.insertBefore(newItgElement, originalItgElement);
+        });
+    }
+}
+exports.RecommandGenerator = RecommandGenerator;
+
+},{"axios":1}],33:[function(require,module,exports){
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1887,7 +1955,7 @@ class singlePageReadTracker {
 exports.singlePageReadTracker = singlePageReadTracker;
 exports.default = singlePageReadTracker;
 
-},{"./ServerRequestAction":28,"./util":33}],33:[function(require,module,exports){
+},{"./ServerRequestAction":28,"./util":34}],34:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const model_1 = require("./model");
@@ -1895,6 +1963,8 @@ function extractURLInformation(URL) {
     const galleryMatch = URL.match(/https:\/\/(exhentai|e-hentai).org\/g\/([0-9A-Za-z]+)\/([0-9A-Za-z]+)\/?/);
     const mpvPageMatch = URL.match(/https:\/\/(exhentai|e-hentai).org\/mpv\/([0-9A-Za-z]+)\/([0-9A-Za-z]+)\/?/);
     const singlePageMatch = URL.match(/https:\/\/(exhentai|e-hentai).org\/s\/([0-9A-Za-z]+)\/([0-9A-Za-z]+)-([0-9]+)\/?/);
+    const searchPageMatch = URL.match(/https:\/\/(exhentai|e-hentai).org\/.*/g);
+    const isInSearchPage = URL.split(/\//g).length === 4;
     if (galleryMatch && galleryMatch.length === 4)
         return new model_1.GalleryInfo({
             position: model_1.Position.gallery,
@@ -1918,6 +1988,16 @@ function extractURLInformation(URL) {
             galleryToken: singlePageMatch[2],
             site: singlePageMatch[1],
             page: parseInt(singlePageMatch[4])
+        });
+    console.log('searchPageMatch', searchPageMatch);
+    console.log('isInSearchPage', isInSearchPage);
+    if (searchPageMatch && isInSearchPage)
+        return new model_1.GalleryInfo({
+            position: model_1.Position.search,
+            galleryId: null,
+            galleryToken: null,
+            site: searchPageMatch[1],
+            page: null
         });
 }
 exports.extractURLInformation = extractURLInformation;
