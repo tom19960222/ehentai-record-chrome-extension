@@ -1,12 +1,13 @@
 export enum Position {
   gallery = 'gallery',
   mpv = 'mpv',
-  single = 'single'
+  single = 'single',
+  search = 'search'
 }
 export class GalleryInfo {
   position: Position;
-  galleryId: number;
-  galleryToken: string;
+  galleryId: number | null;
+  galleryToken: string | null;
   site: string;
   page: number | null;
 

@@ -2,6 +2,7 @@
 import { ServerRequestAction, ReadEvent, ViewerTypeEnum } from "./ServerRequestAction";
 import { mpvPageReadTracker } from "./mpvPageReadTracker";
 import { singlePageReadTracker } from "./singlePageReadTracker";
+import { RecommandGenerator } from "./recommandGenerator";
 import { extractURLInformation } from './util';
 import { Position } from "./model";
 
@@ -17,13 +18,12 @@ export class Main {
   async start() {
     console.log("document.URL", this.document.URL);
     const urlInfo = extractURLInformation(this.document.URL);
-    console.log('Position:', urlInfo.position);
-
     if (!urlInfo){
       // Not in target website.
-      console.log(urlInfo, 'urlInfo');
       return;
     }
+
+    console.log('Position:', urlInfo.position);
 
     switch (urlInfo.position) {
       case Position.gallery:
@@ -55,6 +55,9 @@ export class Main {
         break;
       case Position.mpv:
         new mpvPageReadTracker({ serverRequestAction: this.serverRequestAction, galleryInfo: urlInfo });
+        break;
+      case Position.search:
+        new RecommandGenerator();
         break;
     }
   }

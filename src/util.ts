@@ -10,6 +10,11 @@ export function extractURLInformation(URL: string) {
   const singlePageMatch = URL.match(
     /https:\/\/(exhentai|e-hentai).org\/s\/([0-9A-Za-z]+)\/([0-9A-Za-z]+)-([0-9]+)\/?/
   );
+  const searchPageMatch = URL.match(
+    /https:\/\/(exhentai|e-hentai).org\/.*/g
+  );
+  const isInSearchPage = URL.split(/\//g).length === 4; // In search/home page, there should be 3 slashs. (http:// and slash in path)
+
   if (galleryMatch && galleryMatch.length === 4)
     return new GalleryInfo({
       position: Position.gallery,
@@ -34,4 +39,12 @@ export function extractURLInformation(URL: string) {
       site: singlePageMatch[1],
       page: parseInt(singlePageMatch[4])
     });
+  if (searchPageMatch && isInSearchPage)
+    return new GalleryInfo({
+      position: Position.search,
+      galleryId: null,
+      galleryToken: null,
+      site: searchPageMatch[1],
+      page: null
+    })
 }
