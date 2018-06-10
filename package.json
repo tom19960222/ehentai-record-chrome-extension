@@ -5,7 +5,9 @@
   "main": "content.js",
   "scripts": {
     "test": "jest --coverage",
-    "build": "tsc --pretty -p . && browserify src/content.js > content.js"
+    "build": "tsc --pretty -p . && browserify src/content.js > content.js",
+    "tsc": "tsc --pretty -p . ",
+    "browserify": "browserify src/content.js > content.js"
   },
   "repository": {
     "type": "git",
@@ -19,7 +21,8 @@
     "browserify": "^16.2.0",
     "eslint": "^4.19.1",
     "jest": "^22.4.3",
-    "mock-xmlhttprequest": "^1.2.0"
+    "mock-xmlhttprequest": "^1.2.0",
+    "typescript": "^2.9.1"
   },
   "jest": {
     "testURL": "http://localhost"
