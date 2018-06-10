@@ -1,5 +1,5 @@
 import { ReadEvent, ServerRequestAction, ViewerTypeEnum } from './ServerRequestAction';
-import { GalleryInfo } from './content';
+import { GalleryInfo } from './model';
 
 export class mpvPageReadTracker {
   serverRequestAction: ServerRequestAction;
